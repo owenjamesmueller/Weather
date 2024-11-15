@@ -1,63 +1,47 @@
+document.addEventListener('DOMContentLoaded', function () {
+  // Event listener for the "Get Weather" button
+  document.getElementById('get-weather').addEventListener('click', function () {
+    const city = document.getElementById('city').value.trim(); // Get the city from the input field
 
-
-async function getWeather() {
-    const city = document.getElementById("city").value;
-    const apiKey = "your_actual_api_key_here";  // Replace with your OpenWeatherMap API key
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
- 
- 
-    if (!city) {
-        document.getElementById("weatherInfo").innerHTML = "<p>Please enter a city.</p>";
-        document.getElementById("weatherInfo").style.display = "block";
-        return;
+    if (city === "") {
+      alert("Please enter a city name.");
+      return; // Stop execution if no city is entered
     }
- 
- 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
- 
- 
-        // Log the response data to inspect it
-        console.log(data);
- 
- 
+
+    const apiKey = "YOUR_API_KEY_HERE"; // Replace with your OpenWeather API key
+    const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+    // Fetch weather data from OpenWeather API
+    fetch(apiUrl)
+      .then(response => response.json()) // Parse JSON data
+      .then(data => {
         if (data.cod === "404") {
-            document.getElementById("weatherInfo").innerHTML = "<p>City not found. Please try again.</p>";
-            document.getElementById("weatherInfo").style.display = "block";
-            document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506748686214-03399e597c8d')";  // Default background
+          // City not found
+          document.getElementById('weather-info').innerHTML = `<p>City not found. Please try again.</p>`;
         } else {
-            const weatherDescription = data.weather[0].description;
-            const temperature = data.main.temp;
-            const humidity = data.main.humidity;
-            const windSpeed = data.wind.speed;
- 
- 
-            document.getElementById("weatherInfo").innerHTML = `
-                <h2>Weather in ${city}</h2>
-                <p><strong>Condition:</strong> ${weatherDescription}</p>
-                <p><strong>Temperature:</strong> ${temperature}°C</p>
-                <p><strong>Humidity:</strong> ${humidity}%</p>
-                <p><strong>Wind Speed:</strong> ${windSpeed} m/s</p>
-            `;
-            document.getElementById("weatherInfo").style.display = "block";
- 
- 
-            // Change background based on the weather condition
-            if (weatherDescription.includes("clear")) {
-                document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1466790002277-44644a135a3b')"; // Sunny weather background
-            } else if (weatherDescription.includes("cloudy")) {
-                document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1506748686214-03399e597c8d')"; // Cloudy weather background
-            } else if (weatherDescription.includes("rain")) {
-                document.body.style.backgroundImage = "url('https://images.unsplash.com/photo-1563245295-d7b05434ac4b')"; // Rainy weather background
-            }
+          // Successfully received weather data
+          const weatherDescription = data.weather[0].description;
+          const temperature = data.main.temp;
+          const humidity = data.main.humidity;
+          const windSpeed = data.wind.speed;
+
+          // Build the weather info HTML
+          const weatherHTML = `
+            <h3>Weather in ${data.name}, ${data.sys.country}</h3>
+            <p><strong>Temperature:</strong> ${temperature}°C</p>
+            <p><strong>Condition:</strong> ${weatherDescription}</p>
+            <p><strong>Humidity:</strong> ${humidity}%</p>
+            <p><strong>Wind Speed:</strong> ${windSpeed} m/s</p>
+          `;
+          
+          // Insert the weather info into the page
+          document.getElementById('weather-info').innerHTML = weatherHTML;
         }
-    } catch (error) {
-        console.error("Error fetching data:", error);
-        document.getElementById("weatherInfo").innerHTML = "<p>Error retrieving weather data. Please try again later.</p>";
-        document.getElementById("weatherInfo").style.display = "block";
-    }
- }
- 
- 
- 
+      })
+      .catch(error => {
+        // In case of any error (e.g., network issue)
+        document.getElementById('weather-info').innerHTML = `<p>There was an error fetching the weather data. Please try again later.</p>`;
+        console.error('Error fetching weather data:', error);
+      });
+  });
+});
