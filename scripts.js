@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function () {
       return; // Stop execution if no city is entered
     }
 
-    const apiKey = "YOUR_API_KEY_HERE"; // Replace with your OpenWeather API key
+    const apiKey = "20ed546b6cd5e3eb828c4d35530d1fd0"; // Replace with your OpenWeather API key
     const apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
     // Fetch weather data from OpenWeather API
